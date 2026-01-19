@@ -1,42 +1,80 @@
-# Super Modern Popup App 🌟
+# 🌟 Super Modern Popup App
 
-Modern, kullanıcı etkileşimli ve loglama özelliklerine sahip basit bir Python Tkinter uygulaması.
+![Python](https://img.shields.io/badge/Python-3.x-blue?style=for-the-badge&logo=python)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey?style=for-the-badge)
 
-## Özellikler
+**Super Modern Popup App**, kullanıcı etkileşimli, şık arayüzlü ve gelişmiş loglama özelliklerine sahip bir Python masaüstü uygulamasıdır. `Tkinter` kütüphanesi kullanılarak geliştirilmiş olup, modern tasarım prensipleri ve kullanıcı dostu bir deneyim sunar.
 
-- **Modern Arayüz**: Temiz ve şık tasarım.
-- **Etkileşimli**: Kullanıcıdan isim alarak kişiselleştirilmiş karşılama mesajları gösterir.
-- **Loglama**: Tüm işlemleri ve hataları `~/.local/share/super_popup_app/app_log.txt` dosyasına kaydeder.
-- **Hover Efektleri**: Butonlar üzerinde görsel geri bildirimler.
+## 🚀 Özellikler
 
-## Gereksinimler
+- **🎨 Modern Arayüz**: Koyu mod temalı, göz yormayan şık tasarım.
+- **✨ Etkileşimli Deneyim**: Kullanıcıdan isim alarak kişiselleştirilmiş karşılama mesajları.
+- **📝 Detaylı Loglama**: Tüm kullanıcı etkileşimleri ve sistem hataları otomatik olarak kaydedilir.
+- **💫 Hover Efektleri**: Butonlar üzerinde akıcı görsel geri bildirimler.
+- **🔒 Hata Yönetimi**: Beklenmedik durumlara karşı güvenli hata yakalama mekanizması.
 
-- Python 3.x
-- Tkinter (Python ile birlikte gelir, Linux'ta `sudo apt-get install python3-tk` gerekebilir)
+## 🛠️ Gereksinimler
 
-## Kurulum ve Çalıştırma
+Projenin çalışması için aşağıdakilerin sisteminizde yüklü olması gerekir:
 
-1. Repoyu klonlayın:
+- **Python 3.x**: [Python İndir](https://www.python.org/downloads/)
+- **Tkinter**: Python ile birlikte gelir (Linux kullanıcıları için: `sudo apt-get install python3-tk`)
 
-   ```bash
-   git clone https://github.com/Sopwit/popup-app.git
-   cd popup-app
-   ```
+## 📥 Kurulum
 
-2. Uygulamayı çalıştırın:
-   ```bash
-   python3 popupapp.py
-   ```
-
-## Docker ile Çalıştırma
-
-Uygulama Docker desteği ile gelmektedir. Dockerfile kullanarak imaj oluşturabilirsiniz:
+Proje dosyalarını yerel makinenize klonlayın:
 
 ```bash
-docker build -t popup-app .
-# GUI uygulamalarını Docker ile çalıştırmak ek yapılandırma gerektirir.
+git clone https://github.com/Sopwit/popup-app.git
+cd popup-app
 ```
 
-## Lisans
+## ▶️ Kullanım
 
-Bu proje MIT Lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosyasına bakınız.
+### Normal Çalıştırma
+
+Terminal veya komut satırı üzerinden uygulamayı başlatın:
+
+```bash
+python3 popupapp.py
+```
+
+### Docker ile Çalıştırma
+
+Uygulamayı izole bir ortamda çalıştırmak isterseniz Docker kullanabilirsiniz:
+
+1. **Docker İmajını Oluşturun:**
+
+   ```bash
+   docker build -t popup-app .
+   ```
+
+2. **Konteyneri Başlatın:**
+   _(Not: GUI uygulamalarını Docker üzerinde çalıştırmak için X11 yönlendirmesi gibi ek yapılandırmalar gerekir.)_
+
+## 📂 Proje Yapısı
+
+```
+PopUp-App/
+├── popupapp.py      # Ana uygulama dosyası ve kaynak kodlar
+├── Dockerfile       # Docker yapılandırma dosyası
+├── LICENSE          # MIT Lisans dosyası
+├── README.md        # Proje dokümantasyonu
+└── logo.png         # Uygulama logosu
+```
+
+## 📝 Loglama
+
+Uygulama logları işletim sisteminize göre aşağıdaki dizinde, `app_log.txt` dosyasında saklanır:
+
+- **Linux/macOS**: `~/.local/share/super_popup_app/`
+- **Dosya Yolu**: `~/.local/share/super_popup_app/app_log.txt`
+
+## 🤝 Katkıda Bulunma
+
+Katkılarınızı bekliyoruz! Lütfen bir "Pull Request" göndermeden önce mevcut kod yapısını inceleyin ve değişikliklerinizi test edin.
+
+## 📄 Lisans
+
+Bu proje [MIT Lisansı](LICENSE) altında lisanslanmıştır. Daha fazla bilgi için `LICENSE` dosyasını inceleyebilirsiniz.
