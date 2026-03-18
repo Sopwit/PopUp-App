@@ -67,6 +67,7 @@ GitHub Actions workflow'u her push ve pull request'te:
 
 - Kodun import/syntax kontrolunu yapar
 - `pytest` testlerini calistirir
+- `ubuntu-latest`, `macos-latest` ve `windows-latest` uzerinde dogrulama yapar
 
 ## Lisans
 
