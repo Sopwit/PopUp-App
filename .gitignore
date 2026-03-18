@@ -43,3 +43,10 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Test and tooling caches
+.pytest_cache/
+
+# Build outputs
+output/
+*.spec
