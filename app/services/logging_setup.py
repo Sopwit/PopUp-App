@@ -16,7 +16,7 @@ def resolve_log_dir(
     home = Path(home_dir) if home_dir else Path.home()
 
     if platform_name.startswith("win"):
-        appdata = appdata_dir or os.getenv("APPDATA")
+        appdata = os.getenv("APPDATA") if appdata_dir is None else appdata_dir
         base_dir = Path(appdata) if appdata else home / "AppData" / "Roaming"
         return base_dir / APP_NAME
 

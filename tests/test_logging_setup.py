@@ -27,6 +27,12 @@ def test_resolve_log_dir_windows_without_appdata() -> None:
     assert str(result).replace("\\", "/") == "C:/Users/test/AppData/Roaming/super_popup_app"
 
 
+def test_resolve_log_dir_windows_uses_env_appdata_when_param_is_none(monkeypatch) -> None:
+    monkeypatch.setenv("APPDATA", "C:/Env/AppData/Roaming")
+    result = resolve_log_dir(platform_name="win32", home_dir="C:/Users/test", appdata_dir=None)
+    assert str(result).replace("\\", "/") == "C:/Env/AppData/Roaming/super_popup_app"
+
+
 def test_resolve_log_dir_unknown_platform_defaults_to_local_share() -> None:
     result = resolve_log_dir(platform_name="freebsd", home_dir="/home/test")
     assert str(result) == "/home/test/.local/share/super_popup_app"
