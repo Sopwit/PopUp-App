@@ -10,7 +10,9 @@ RUN apt-get update && apt-get install -y \
     binutils \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir pyinstaller
+COPY dev-install.txt ./
+RUN python -m pip install --no-cache-dir --upgrade pip && \
+    python -m pip install --no-cache-dir -r dev-install.txt
 
 COPY . .
 
