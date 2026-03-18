@@ -1,17 +1,17 @@
 # Super Modern Popup App
 
-A lightweight desktop popup application built with Tkinter.
+Tkinter ile gelistirilmis hafif bir masaustu popup uygulamasi.
 
-Turkish documentation: [README_TR.md](README_TR.md)
+English documentation: [README.md](README.md)
 
-## Features
+## Ozellikler
 
-- Simple and modern interface
-- Name-based greeting popup
-- File logging for app and popup interactions
-- Platform-aware log directory selection for Linux, macOS, and Windows
+- Sade ve modern arayuz
+- Isme ozel karsilama popup'i
+- Uygulama ve popup etkilesimleri icin dosya loglama
+- Linux, macOS ve Windows icin platforma uygun log dizini secimi
 
-## Project Structure
+## Proje Yapisi
 
 ```text
 PopUp-App/
@@ -37,40 +37,40 @@ PopUp-App/
 └── README_TR.md
 ```
 
-## Requirements
+## Gereksinimler
 
 - Python 3.10+
-- Tkinter (on Linux, you may need `python3-tk`)
+- Tkinter (Linux'ta gerekirse `python3-tk`)
 
-Install runtime dependencies:
+Runtime bagimliliklarini kurma:
 
 ```bash
 python3 -m pip install -r install.txt
 ```
 
-## Run Locally
+## Yerel Calistirma
 
 ```bash
 python3 popupapp.py
 ```
 
-## Tests
+## Test
 
 ```bash
 python3 -m pip install -r dev-install.txt
 pytest -q
 ```
 
-## Build Linux Binary with Docker
+## Docker ile Linux Binary Uretimi
 
 ```bash
 docker build -t popup-app-builder .
 docker run --rm -v "$PWD/output:/output" popup-app-builder
 ```
 
-Generated file: `output/popupapp-linux`
+Uretilen dosya: `output/popupapp-linux`
 
-## Log File Locations
+## Log Dosyasi Konumlari
 
 - Linux: `~/.local/share/super_popup_app/app_log.txt`
 - macOS: `~/Library/Application Support/super_popup_app/app_log.txt`
@@ -78,28 +78,28 @@ Generated file: `output/popupapp-linux`
 
 ## CI
 
-The GitHub Actions workflow runs on every push and pull request and:
+GitHub Actions workflow'u her push ve pull request'te:
 
-- performs syntax/import checks
-- runs `pytest`
-- validates on `ubuntu-latest`, `macos-latest`, and `windows-latest`
-- builds Linux binary via PyInstaller
-- uploads `popupapp-linux` as workflow artifact
+- syntax/import kontrollerini yapar
+- `pytest` testlerini calistirir
+- `ubuntu-latest`, `macos-latest` ve `windows-latest` uzerinde dogrular
+- PyInstaller ile Linux binary uretir
+- `popupapp-linux` artifact olarak yukler
 
 ## Release
 
-- Tag format: `vMAJOR.MINOR.PATCH` (example: `v0.1.0`)
+- Tag formati: `vMAJOR.MINOR.PATCH` (ornek: `v0.1.0`)
 - Release workflow: [`.github/workflows/release.yml`](.github/workflows/release.yml)
 - Release template: [`.github/RELEASE_TEMPLATE.md`](.github/RELEASE_TEMPLATE.md)
-- Changelog source: [`CHANGELOG.md`](CHANGELOG.md)
+- Changelog kaynagi: [`CHANGELOG.md`](CHANGELOG.md)
 
-Create and push a tag:
+Tag olusturma ve push:
 
 ```bash
 git tag v0.1.0
 git push origin v0.1.0
 ```
 
-## License
+## Lisans
 
 MIT (`LICENSE`)

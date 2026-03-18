@@ -31,13 +31,31 @@ def configure_logging() -> logging.Logger:
     log_dir.mkdir(parents=True, exist_ok=True)
     log_file = log_dir / LOG_FILE_NAME
 
-    logging.basicConfig(
-        filename=str(log_file),
-        level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-
     logger = logging.getLogger(APP_NAME)
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    has_target_handler = False
+    for handler in list(logger.handlers):
+        if not isinstance(handler, logging.FileHandler):
+            continue
+
+        if Path(handler.baseFilename) == log_file:
+            has_target_handler = True
+            continue
+
+        logger.removeHandler(handler)
+        handler.close()
+
+    if not has_target_handler:
+        file_handler = logging.FileHandler(log_file, encoding="utf-8")
+        file_handler.setFormatter(
+            logging.Formatter(
+                fmt="%(asctime)s - %(levelname)s - %(message)s",
+                datefmt="%Y-%m-%d %H:%M:%S",
+            )
+        )
+        logger.addHandler(file_handler)
+
     logger.info("--- Uygulama Baslatildi ---")
     return logger
