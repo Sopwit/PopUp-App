@@ -17,6 +17,6 @@ RUN python -m pip install --no-cache-dir --upgrade pip && \
 COPY . .
 
 # Linux icin tek dosya binary uretilir.
-CMD pyinstaller --clean --onefile --windowed --hidden-import=tkinter --name popupapp popupapp.py && \
+CMD pyinstaller popupapp.spec && \
     mkdir -p /output && \
     cp dist/popupapp /output/popupapp-linux

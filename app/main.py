@@ -1,12 +1,13 @@
-from app.services.logging_setup import configure_logging
-from app.ui.popup_ui import PopupApp
+"""Legacy import bridge for app.main."""
 
+import sys
+from pathlib import Path
 
-def run() -> None:
-    logger = configure_logging()
-    app = PopupApp(logger)
-    app.run()
+_SRC_DIR = str(Path(__file__).resolve().parent.parent / "src")
+if _SRC_DIR not in sys.path:
+    sys.path.insert(0, _SRC_DIR)
 
+from popupapp.ui.app import run
 
 if __name__ == "__main__":
     run()

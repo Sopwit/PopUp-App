@@ -1,105 +1,154 @@
-# Super Modern Popup App
+<div align="center">
 
-Tkinter ile gelistirilmis hafif bir masaustu popup uygulamasi.
+# 🏰 Super Modern PopUp App
 
-English documentation: [README.md](README.md)
+**Modern Python ve Tkinter ile geliştirilmiş, kurumsal standartlarda, hafif ve çapraz platform masaüstü karşılama ve bildirim uygulaması.**
 
-## Ozellikler
+[![CI](https://github.com/Sopwit/PopUp-App/actions/workflows/ci.yml/badge.svg)](https://github.com/Sopwit/PopUp-App/actions/workflows/ci.yml)
+[![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue.svg)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Code Style: Clean](https://img.shields.io/badge/code%20style-modular%20clean-brightgreen.svg)](docs/ARCHITECTURE.md)
 
-- Sade ve modern arayuz
-- Isme ozel karsilama popup'i
-- Uygulama ve popup etkilesimleri icin dosya loglama
-- Linux, macOS ve Windows icin platforma uygun log dizini secimi
+[English](README.md) • [Türkçe](README_TR.md) • [Mimari](docs/ARCHITECTURE.md) • [Derleme Rehberi](docs/BUILD.md) • [Güvenlik](docs/SECURITY.md)
 
-## Proje Yapisi
+</div>
+
+---
+
+## 🌟 Öne Çıkan Özellikler
+
+- ⚡ **Ultra Hızlı Başlangıç**: Ağır harici bağımlılık içermez, saf standart kütüphane ve Tkinter üzerinde çalışır.
+- 🛡️ **Gelişmiş Güvenlik**: CRLF Log Injection (CWE-117) koruması ve otomatik dosya boyutu rotasyonu (Disk DoS önleme).
+- 🎨 **Modern Koyu Arayüz**: Titreşimsiz (jitter-free) buton geçişleri, altın rengi vurgular ve şık koyu tema.
+- 🪟 **Gerçek Modal Pencere Mimarisi**: Ebeveyn pencere veya ekran merkezine otomatik konumlanma (`center_window`), tekil aktif popup kontrolü ve klavye kısayolları (`<Return>`, `<Escape>`).
+- 📁 **İşletim Sistemine Uyumlu Loglama**: Linux XDG, macOS Application Support ve Windows AppData dizinlerine güvenli yazım.
+- 🚀 **CI/CD & Tek Dosya Binary**: GitHub Actions çoklu platform CI ve PyInstaller tek dosya binary üretimi.
+
+---
+
+## 🏛️ Mimari Tasarım
+
+```mermaid
+graph TD
+    subgraph UI Layer ["UI Layer (src/popupapp/ui)"]
+        Entry[popupapp.py / __main__.py] --> App[PopupApp Controller]
+        App --> Components[UI Components & Buttons]
+        App --> Modal[Modal Greeting Dialog]
+    end
+
+    subgraph Core Domain ["Core Logic (src/popupapp/core)"]
+        Sanitizer[Input Sanitizer / CWE-117 Defense]
+    end
+
+    subgraph Infrastructure ["Services (src/popupapp/services)"]
+        LoggingService[Rotating Logging Service]
+    end
+
+    subgraph Configuration ["Config (src/popupapp/config)"]
+        Theme[UITheme & Palette]
+        Constants[Constants & Limits]
+    end
+
+    App --> Sanitizer
+    App --> LoggingService
+    App --> Theme
+    App --> Constants
+    LoggingService --> Constants
+```
+
+---
+
+## 📂 Proje Yapısı
 
 ```text
 PopUp-App/
-├── app/
-│   ├── main.py
-│   ├── services/
-│   │   └── logging_setup.py
-│   └── ui/
-│       └── popup_ui.py
-├── tests/
-│   ├── test_logging_setup.py
-│   └── test_smoke.py
-├── .github/workflows/ci.yml
-├── .github/workflows/release.yml
-├── .github/RELEASE_TEMPLATE.md
-├── .github/release.yml
-├── popupapp.py
-├── Dockerfile
-├── install.txt
-├── dev-install.txt
-├── CHANGELOG.md
-├── README.md
-└── README_TR.md
+├── .editorconfig
+├── .gitattributes
+├── .gitignore
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── LICENSE
+├── Makefile                       # Geliştirme ve derleme komutları
+├── README.md                      # İngilizce dokümantasyon
+├── README_TR.md                   # Türkçe dokümantasyon
+├── SECURITY.md                    # Güvenlik politikası ve kontroller
+├── CHANGELOG.md                   # Sürüm notları (Semantic Versioning)
+├── pyproject.toml                 # Paket ve pytest yapılandırması
+├── dev-install.txt                # Geliştirme bağımlılıkları
+├── install.txt                    # Runtime bağımlılıkları (saf stdlib)
+├── Dockerfile                     # İzole derleme container'ı
+├── logo.png                       # Uygulama simgesi
+├── popupapp.py                    # Kök çalıştırma giriş noktası
+├── popupapp.spec                  # PyInstaller derleme spesifikasyonu
+├── docs/                          # Kapsamlı teknik dokümantasyon
+│   ├── ARCHITECTURE.md
+│   ├── BUILD.md
+│   ├── INSTALL.md
+│   └── SECURITY.md
+├── scripts/                       # Otomasyon betikleri
+│   ├── dev.sh
+│   ├── test.sh
+│   ├── lint.sh
+│   ├── build.sh
+│   └── clean.sh
+├── src/popupapp/                  # Çekirdek paket
+│   ├── config/                    # Tema ve sabitler
+│   ├── core/                      # Alan mantığı ve girdi temizleme
+│   ├── services/                  # Loglama ve rotasyon servisi
+│   └── ui/                        # Görsel bileşenler ve uygulama kontrolcüsü
+└── tests/                         # Kapsamlı test paketi
+    ├── conftest.py
+    ├── unit/                      # Birim testleri
+    └── integration/               # Entegrasyon testleri
 ```
 
-## Gereksinimler
+---
 
-- Python 3.10+
-- Tkinter (Linux'ta gerekirse `python3-tk`)
+## 🚀 Hızlı Başlangıç
 
-Runtime bagimliliklarini kurma:
+### 1. Kaynaktan Çalıştırma
 
 ```bash
-python3 -m pip install -r install.txt
+# Depoyu klonlayın
+git clone https://github.com/Sopwit/PopUp-App.git
+cd PopUp-App
+
+# Uygulamayı başlatın
+make run
 ```
 
-## Yerel Calistirma
+### 2. Testleri Koşma
 
 ```bash
-python3 popupapp.py
+# Geliştirme bağımlılıklarını kurun
+make dev-install
+
+# Tüm testleri çalıştırın
+make test
+
+# Derleme ve test doğrulamasını yapın
+make check
 ```
 
-## Test
+### 3. Tek Dosya Binary Üretimi
 
 ```bash
-python3 -m pip install -r dev-install.txt
-pytest -q
+make build
+# Üretilen dosya: dist/popupapp
 ```
 
-## Docker ile Linux Binary Uretimi
+---
 
-```bash
-docker build -t popup-app-builder .
-docker run --rm -v "$PWD/output:/output" popup-app-builder
-```
+## 📜 Log Dosyası Konumları
 
-Uretilen dosya: `output/popupapp-linux`
+| İşletim Sistemi | Standart Dizin |
+| :--- | :--- |
+| **Linux / BSD** | `~/.local/share/super_popup_app/app_log.txt` |
+| **macOS** | `~/Library/Application Support/super_popup_app/app_log.txt` |
+| **Windows** | `%APPDATA%\super_popup_app\app_log.txt` |
 
-## Log Dosyasi Konumlari
+---
 
-- Linux: `~/.local/share/super_popup_app/app_log.txt`
-- macOS: `~/Library/Application Support/super_popup_app/app_log.txt`
-- Windows: `%APPDATA%\\super_popup_app\\app_log.txt`
+## 📄 Lisans
 
-## CI
-
-GitHub Actions workflow'u her push ve pull request'te:
-
-- syntax/import kontrollerini yapar
-- `pytest` testlerini calistirir
-- `ubuntu-latest`, `macos-latest` ve `windows-latest` uzerinde dogrular
-- PyInstaller ile Linux binary uretir
-- `popupapp-linux` artifact olarak yukler
-
-## Release
-
-- Tag formati: `vMAJOR.MINOR.PATCH` (ornek: `v0.1.0`)
-- Release workflow: [`.github/workflows/release.yml`](.github/workflows/release.yml)
-- Release template: [`.github/RELEASE_TEMPLATE.md`](.github/RELEASE_TEMPLATE.md)
-- Changelog kaynagi: [`CHANGELOG.md`](CHANGELOG.md)
-
-Tag olusturma ve push:
-
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-## Lisans
-
-MIT (`LICENSE`)
+MIT Lisansı ile dağıtılmaktadır. Detaylar için [`LICENSE`](LICENSE) dosyasına bakabilirsiniz.

@@ -1,105 +1,154 @@
-# Super Modern Popup App
+<div align="center">
 
-A lightweight desktop popup application built with Tkinter.
+# 🏰 Super Modern PopUp App
 
-Turkish documentation: [README_TR.md](README_TR.md)
+**A lightweight, production-grade cross-platform desktop popup & greeting application built with modern Python and Tkinter.**
 
-## Features
+[![CI](https://github.com/Sopwit/PopUp-App/actions/workflows/ci.yml/badge.svg)](https://github.com/Sopwit/PopUp-App/actions/workflows/ci.yml)
+[![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue.svg)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Code Style: Clean](https://img.shields.io/badge/code%20style-modular%20clean-brightgreen.svg)](docs/ARCHITECTURE.md)
 
-- Simple and modern interface
-- Name-based greeting popup
-- File logging for app and popup interactions
-- Platform-aware log directory selection for Linux, macOS, and Windows
+[English](README.md) • [Türkçe](README_TR.md) • [Architecture](docs/ARCHITECTURE.md) • [Build Guide](docs/BUILD.md) • [Security](docs/SECURITY.md)
 
-## Project Structure
+</div>
+
+---
+
+## 🌟 Key Highlights
+
+- ⚡ **Ultra-Fast Startup**: Zero heavy dependencies, pure standard library execution with Tkinter.
+- 🛡️ **Hardened Security**: Built-in protection against CRLF Log Injection (CWE-117) and automatic log rotation (DoS defense).
+- 🎨 **Modern Dark Aesthetics**: Premium dark theme with vibrant gold accents and jitter-free hover interactions.
+- 🪟 **True Modal Management**: Centered windows on screen/parent with strict modal focus and single-instance popup controls.
+- 📁 **Cross-Platform OS Logging**: Automatic OS-standard log directory routing (Linux XDG, macOS Application Support, Windows AppData).
+- 🚀 **CI/CD & Single-File Binaries**: Multi-OS GitHub Actions workflow and PyInstaller packaging.
+
+---
+
+## 🏛️ Architecture Overview
+
+```mermaid
+graph TD
+    subgraph UI Layer ["UI Layer (src/popupapp/ui)"]
+        Entry[popupapp.py / __main__.py] --> App[PopupApp Controller]
+        App --> Components[UI Components & Buttons]
+        App --> Modal[Modal Greeting Dialog]
+    end
+
+    subgraph Core Domain ["Core Logic (src/popupapp/core)"]
+        Sanitizer[Input Sanitizer / CWE-117 Defense]
+    end
+
+    subgraph Infrastructure ["Services (src/popupapp/services)"]
+        LoggingService[Rotating Logging Service]
+    end
+
+    subgraph Configuration ["Config (src/popupapp/config)"]
+        Theme[UITheme & Palette]
+        Constants[Constants & Limits]
+    end
+
+    App --> Sanitizer
+    App --> LoggingService
+    App --> Theme
+    App --> Constants
+    LoggingService --> Constants
+```
+
+---
+
+## 📂 Project Structure
 
 ```text
 PopUp-App/
-├── app/
-│   ├── main.py
-│   ├── services/
-│   │   └── logging_setup.py
-│   └── ui/
-│       └── popup_ui.py
-├── tests/
-│   ├── test_logging_setup.py
-│   └── test_smoke.py
-├── .github/workflows/ci.yml
-├── .github/workflows/release.yml
-├── .github/RELEASE_TEMPLATE.md
-├── .github/release.yml
-├── popupapp.py
-├── Dockerfile
-├── install.txt
-├── dev-install.txt
-├── CHANGELOG.md
-├── README.md
-└── README_TR.md
+├── .editorconfig
+├── .gitattributes
+├── .gitignore
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── LICENSE
+├── Makefile                       # Development & build task automation
+├── README.md                      # English documentation
+├── README_TR.md                   # Turkish documentation
+├── SECURITY.md                    # Security policy & controls
+├── CHANGELOG.md                   # Release notes & semantic versioning
+├── pyproject.toml                 # Packaging & pytest configuration
+├── dev-install.txt                # Development dependencies
+├── install.txt                    # Runtime dependencies (pure stdlib)
+├── Dockerfile                     # Reproducible build container
+├── logo.png                       # Application icon asset
+├── popupapp.py                    # Root execution entry point
+├── popupapp.spec                  # PyInstaller build specification
+├── docs/                          # In-depth technical documentation
+│   ├── ARCHITECTURE.md
+│   ├── BUILD.md
+│   ├── INSTALL.md
+│   └── SECURITY.md
+├── scripts/                       # Developer automation scripts
+│   ├── dev.sh
+│   ├── test.sh
+│   ├── lint.sh
+│   ├── build.sh
+│   └── clean.sh
+├── src/popupapp/                  # Core package
+│   ├── config/                    # Theme and constants
+│   ├── core/                      # Domain logic & sanitization
+│   ├── services/                  # OS-aware logging & rotation
+│   └── ui/                        # Presentation & modal components
+└── tests/                         # Comprehensive test suite
+    ├── conftest.py
+    ├── unit/                      # Unit tests
+    └── integration/               # Integration tests
 ```
 
-## Requirements
+---
 
-- Python 3.10+
-- Tkinter (on Linux, you may need `python3-tk`)
+## 🚀 Quickstart
 
-Install runtime dependencies:
+### 1. Run from Source
 
 ```bash
-python3 -m pip install -r install.txt
+# Clone the repository
+git clone https://github.com/Sopwit/PopUp-App.git
+cd PopUp-App
+
+# Run directly
+make run
 ```
 
-## Run Locally
+### 2. Run Tests & Validation
 
 ```bash
-python3 popupapp.py
+# Install development dependencies
+make dev-install
+
+# Run full test suite
+make test
+
+# Check syntax and test execution
+make check
 ```
 
-## Tests
+### 3. Build Standalone Binary
 
 ```bash
-python3 -m pip install -r dev-install.txt
-pytest -q
+make build
+# Binary created at: dist/popupapp
 ```
 
-## Build Linux Binary with Docker
+---
 
-```bash
-docker build -t popup-app-builder .
-docker run --rm -v "$PWD/output:/output" popup-app-builder
-```
+## 📜 Log Storage Locations
 
-Generated file: `output/popupapp-linux`
+| Operating System | Default Path |
+| :--- | :--- |
+| **Linux / BSD** | `~/.local/share/super_popup_app/app_log.txt` |
+| **macOS** | `~/Library/Application Support/super_popup_app/app_log.txt` |
+| **Windows** | `%APPDATA%\super_popup_app\app_log.txt` |
 
-## Log File Locations
+---
 
-- Linux: `~/.local/share/super_popup_app/app_log.txt`
-- macOS: `~/Library/Application Support/super_popup_app/app_log.txt`
-- Windows: `%APPDATA%\\super_popup_app\\app_log.txt`
+## 📄 License
 
-## CI
-
-The GitHub Actions workflow runs on every push and pull request and:
-
-- performs syntax/import checks
-- runs `pytest`
-- validates on `ubuntu-latest`, `macos-latest`, and `windows-latest`
-- builds Linux binary via PyInstaller
-- uploads `popupapp-linux` as workflow artifact
-
-## Release
-
-- Tag format: `vMAJOR.MINOR.PATCH` (example: `v0.1.0`)
-- Release workflow: [`.github/workflows/release.yml`](.github/workflows/release.yml)
-- Release template: [`.github/RELEASE_TEMPLATE.md`](.github/RELEASE_TEMPLATE.md)
-- Changelog source: [`CHANGELOG.md`](CHANGELOG.md)
-
-Create and push a tag:
-
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-## License
-
-MIT (`LICENSE`)
+Distributed under the MIT License. See [`LICENSE`](LICENSE) for details.

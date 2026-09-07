@@ -35,7 +35,7 @@ jobs:
 
       - name: Build Linux binary
         run: |
-          pyinstaller --clean --onefile --windowed --hidden-import=tkinter --name popupapp popupapp.py
+          pyinstaller popupapp.spec
           cp dist/popupapp dist/popupapp-linux
 
       - name: Publish GitHub Release

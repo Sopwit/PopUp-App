@@ -1,6 +1,11 @@
-import logging
+"""Unit tests for platform log path resolution and rotating handler setup."""
 
-from app.services.logging_setup import APP_NAME, LOG_FILE_NAME, configure_logging, resolve_log_dir
+import logging
+from logging.handlers import RotatingFileHandler
+from pathlib import Path
+
+from popupapp.config.constants import APP_NAME, LOG_FILE_NAME
+from popupapp.services.logging_service import configure_logging, resolve_log_dir
 
 
 def _norm(path: object) -> str:
@@ -37,27 +42,47 @@ def test_resolve_log_dir_windows_uses_env_appdata_when_param_is_none(monkeypatch
     assert _norm(result) == "C:/Env/AppData/Roaming/super_popup_app"
 
 
-def test_resolve_log_dir_unknown_platform_defaults_to_local_share() -> None:
-    result = resolve_log_dir(platform_name="freebsd", home_dir="/home/test")
+def test_resolve_log_dir_fallback() -> None:
+    result = resolve_log_dir(platform_name="solaris", home_dir="/home/test")
     assert _norm(result) == "/home/test/.local/share/super_popup_app"
 
 
-def test_configure_logging_reuses_handler_and_writes_log(monkeypatch, tmp_path) -> None:
+def test_configure_logging_idempotence(monkeypatch, tmp_path) -> None:
     logger = logging.getLogger(APP_NAME)
     for handler in list(logger.handlers):
         logger.removeHandler(handler)
         handler.close()
 
-    monkeypatch.setattr("app.services.logging_setup.resolve_log_dir", lambda: tmp_path)
+    monkeypatch.setattr("popupapp.services.logging_service.resolve_log_dir", lambda: tmp_path)
 
-    first_logger = configure_logging()
-    second_logger = configure_logging()
+    log1 = configure_logging()
+    log2 = configure_logging()
 
-    file_handlers = [h for h in first_logger.handlers if isinstance(h, logging.FileHandler)]
-    assert first_logger is second_logger
+    assert log1 is log2
+    file_handlers = [h for h in log1.handlers if isinstance(h, RotatingFileHandler)]
     assert len(file_handlers) == 1
     assert (tmp_path / LOG_FILE_NAME).exists()
 
-    for handler in list(first_logger.handlers):
-        first_logger.removeHandler(handler)
+    for handler in list(log1.handlers):
+        log1.removeHandler(handler)
+        handler.close()
+
+
+def test_logging_rotation_trigger(monkeypatch, tmp_path) -> None:
+    logger = logging.getLogger(APP_NAME)
+    for handler in list(logger.handlers):
+        logger.removeHandler(handler)
+        handler.close()
+
+    monkeypatch.setattr("popupapp.services.logging_service.resolve_log_dir", lambda: tmp_path)
+
+    rot_logger = configure_logging(max_bytes=100, backup_count=2)
+    for i in range(25):
+        rot_logger.info("Message %d: testing log rotation with sufficient padding data", i)
+
+    log_files = list(tmp_path.glob(f"{LOG_FILE_NAME}*"))
+    assert len(log_files) > 1
+
+    for handler in list(rot_logger.handlers):
+        rot_logger.removeHandler(handler)
         handler.close()
