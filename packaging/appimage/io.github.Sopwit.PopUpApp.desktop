@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=PopUp App
+Comment=Secure, localized desktop greeting application
+Exec=popupapp
+Icon=io.github.Sopwit.PopUpApp
+Categories=Utility;GTK;
+Terminal=false
+StartupNotify=true

@@ -1,16 +1,20 @@
-## Summary
+## PopUp App
 
-- 
+A secure, localized desktop greeting application for Linux, packaged as a portable AppImage.
 
-## Changes
+## Highlights
 
-- 
+- Turkish and English interface with runtime language switching.
+- Sanitized input and rotating local logs.
+- Modal desktop workflow and packaged application icon.
 
-## Testing
+## Linux download
 
-- [ ] Local tests passed (`python -m pytest -q`)
-- [ ] CI passed on Linux/macOS/Windows
+Download `PopUp-App-<version>-x86_64.AppImage`, make it executable, then launch it:
 
-## Artifacts
+```bash
+chmod +x PopUp-App-<version>-x86_64.AppImage
+./PopUp-App-<version>-x86_64.AppImage
+```
 
-- `popupapp-linux`
+No system-wide installation is required.
