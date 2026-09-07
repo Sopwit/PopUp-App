@@ -1,8 +1,13 @@
-"""Integration tests for UI components and geometry positioning."""
+"""Integration tests for UI components, custom dialogs, and geometry positioning."""
 
 import tkinter as tk
 from popupapp.config.theme import THEME
-from popupapp.ui.components import center_window, create_badge, create_styled_button
+from popupapp.ui.components import (
+    ask_custom_string,
+    center_window,
+    create_badge,
+    create_styled_button,
+)
 
 
 def test_center_window_geometry(tk_root) -> None:

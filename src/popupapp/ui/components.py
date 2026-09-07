@@ -1,8 +1,9 @@
-"""UI helper components, layout positioning, and widget factories."""
+"""UI helper components, custom modal dialogs, layout positioning, and widget factories."""
 
 import tkinter as tk
 from typing import Callable
 from popupapp.config.theme import THEME
+from popupapp.i18n.translations import I18N
 
 
 def center_window(
@@ -83,3 +84,102 @@ def create_badge(
         pady=3,
         relief="flat",
     )
+
+
+def ask_custom_string(
+    parent: tk.Tk | tk.Toplevel,
+    title: str,
+    prompt: str,
+    icon_image: tk.PhotoImage | None = None,
+) -> str | None:
+    """Show a custom themed modal dialog asking for user string input."""
+    dialog = tk.Toplevel(parent)
+    dialog.title(title)
+    dialog.configure(bg=THEME.BG_POPUP)
+    dialog.resizable(False, False)
+    dialog.transient(parent)
+
+    if icon_image:
+        try:
+            dialog.iconphoto(False, icon_image)
+        except Exception:
+            pass
+
+    result: list[str | None] = [None]
+
+    card = tk.Frame(
+        dialog,
+        bg=THEME.BG_CARD,
+        highlightbackground=THEME.BORDER_SUBTLE,
+        highlightthickness=1,
+        padx=20,
+        pady=16,
+    )
+    card.pack(fill="both", expand=True, padx=14, pady=14)
+
+    lbl_prompt = tk.Label(
+        card,
+        text=prompt,
+        font=THEME.FONT_POPUP_TEXT,
+        fg=THEME.TEXT_WHITE,
+        bg=THEME.BG_CARD,
+    )
+    lbl_prompt.pack(anchor="w", pady=(2, 10))
+
+    entry_var = tk.StringVar()
+    entry = tk.Entry(
+        card,
+        textvariable=entry_var,
+        font=THEME.FONT_POPUP_TEXT,
+        bg=THEME.BG_CANVAS,
+        fg=THEME.TEXT_WHITE,
+        insertbackground=THEME.ACCENT_PRIMARY,
+        relief="flat",
+        highlightthickness=1,
+        highlightbackground=THEME.BORDER_SUBTLE,
+        highlightcolor=THEME.ACCENT_PRIMARY,
+    )
+    entry.pack(fill="x", pady=(0, 16), ipady=4)
+
+    def on_submit() -> None:
+        result[0] = entry_var.get()
+        dialog.destroy()
+
+    def on_cancel() -> None:
+        result[0] = None
+        dialog.destroy()
+
+    btn_row = tk.Frame(card, bg=THEME.BG_CARD)
+    btn_row.pack(fill="x")
+
+    btn_submit = create_styled_button(
+        parent=btn_row,
+        text=I18N.t("btn_ok"),
+        command=on_submit,
+        bg_color=THEME.ACCENT_PRIMARY,
+        hover_color=THEME.ACCENT_PRIMARY_HOVER,
+        font=THEME.FONT_BUTTON,
+        width=10,
+    )
+    btn_submit.pack(side="right", padx=(8, 0))
+
+    btn_cancel = create_styled_button(
+        parent=btn_row,
+        text=I18N.t("btn_cancel"),
+        command=on_cancel,
+        bg_color=THEME.ACCENT_DANGER,
+        hover_color=THEME.ACCENT_DANGER_HOVER,
+        font=THEME.FONT_BUTTON,
+        width=10,
+    )
+    btn_cancel.pack(side="right")
+
+    dialog.protocol("WM_DELETE_WINDOW", on_cancel)
+    dialog.bind("<Return>", lambda _e: on_submit())
+    dialog.bind("<Escape>", lambda _e: on_cancel())
+
+    center_window(dialog, 380, 200, parent=parent)
+    entry.focus_set()
+    dialog.wait_window()
+
+    return result[0]

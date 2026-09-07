@@ -25,17 +25,22 @@ def test_app_lifecycle_open_close(tk_root) -> None:
     assert logger.info.called
 
 
-def test_app_language_switching(tk_root) -> None:
+def test_app_language_switching_reactive_status(tk_root) -> None:
     logger = MagicMock()
     app = PopupApp(logger=logger, root=tk_root)
 
     app.switch_language(Locale.EN)
     assert I18N.current_locale == Locale.EN
     assert app.root.title() == "Super Modern Popup App"
+    assert app._lbl_status.cget("text") == "System ready."
+
+    app.set_status("status_greeted", name="Emir")
+    assert app._lbl_status.cget("text") == "Last action: Emir greeted."
 
     app.switch_language(Locale.TR)
     assert I18N.current_locale == Locale.TR
     assert app.root.title() == "Super Modern Popup Uygulaması"
+    assert app._lbl_status.cget("text") == "Son işlem: Emir selamlandı."
 
 
 def test_app_modern_popup_flow(monkeypatch, tk_root) -> None:
@@ -43,21 +48,23 @@ def test_app_modern_popup_flow(monkeypatch, tk_root) -> None:
     app = PopupApp(logger=logger, root=tk_root)
 
     # 1. Dialog cancelled
-    monkeypatch.setattr("tkinter.simpledialog.askstring", lambda *a, **kw: None)
+    monkeypatch.setattr("popupapp.ui.app.ask_custom_string", lambda *a, **kw: None)
     app.modern_popup()
     assert app._active_popup is None
+    assert app._lbl_status.cget("text") == I18N.t("status_cancelled")
 
     # 2. Empty input
-    monkeypatch.setattr("tkinter.simpledialog.askstring", lambda *a, **kw: "   ")
+    monkeypatch.setattr("popupapp.ui.app.ask_custom_string", lambda *a, **kw: "   ")
     app.modern_popup()
     assert app._active_popup is not None
     assert app._active_popup.winfo_exists()
 
     # 3. Valid name
-    monkeypatch.setattr("tkinter.simpledialog.askstring", lambda *a, **kw: "Emir")
+    monkeypatch.setattr("popupapp.ui.app.ask_custom_string", lambda *a, **kw: "Emir")
     app.modern_popup()
     assert app._active_popup is not None
     assert app._active_popup.winfo_exists()
+    assert "Emir" in app._lbl_status.cget("text")
 
 
 def test_app_exception_handling_in_dialog(monkeypatch, tk_root) -> None:
@@ -67,6 +74,7 @@ def test_app_exception_handling_in_dialog(monkeypatch, tk_root) -> None:
     def raise_err(*args, **kwargs):
         raise RuntimeError("Simulated Dialog Failure")
 
-    monkeypatch.setattr("tkinter.simpledialog.askstring", raise_err)
+    monkeypatch.setattr("popupapp.ui.app.ask_custom_string", raise_err)
     app.modern_popup()
     assert logger.error.called
+    assert "Simulated Dialog Failure" in app._lbl_status.cget("text")

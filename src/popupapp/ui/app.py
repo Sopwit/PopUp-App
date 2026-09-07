@@ -1,9 +1,8 @@
-"""Main desktop GUI Application controller with redesigned modern interface and i18n support."""
+"""Main desktop GUI Application controller with custom themed dialogs, reactive i18n, and modal popups."""
 
 import logging
 from pathlib import Path
 import tkinter as tk
-from tkinter import simpledialog
 
 from popupapp.config.constants import (
     MAIN_WINDOW_HEIGHT,
@@ -16,11 +15,11 @@ from popupapp.config.theme import THEME
 from popupapp.core.sanitization import sanitize_input
 from popupapp.i18n.translations import I18N, Locale
 from popupapp.services.logging_service import configure_logging
-from popupapp.ui.components import center_window, create_styled_button
+from popupapp.ui.components import ask_custom_string, center_window, create_styled_button
 
 
 class PopupApp:
-    """Primary Tkinter application managing main window lifecycle, dynamic i18n, and modal popups."""
+    """Primary Tkinter application managing main window lifecycle, reactive i18n, and custom modals."""
 
     def __init__(self, logger: logging.Logger, root: tk.Tk | None = None) -> None:
         self.logger = logger
@@ -30,6 +29,10 @@ class PopupApp:
 
         self._active_popup: tk.Toplevel | None = None
         self._icon_image: tk.PhotoImage | None = None
+
+        # Reactive status state
+        self._status_key: str = "status_ready"
+        self._status_kwargs: dict[str, object] = {}
 
         # Widget references for reactive i18n updating
         self._lbl_title: tk.Label | None = None
@@ -83,7 +86,7 @@ class PopupApp:
             bg_color=THEME.LANG_BTN_BG,
             hover_color=THEME.LANG_BTN_HOVER,
             font=THEME.FONT_BUTTON_SM,
-            width=8,
+            width=12,
         )
         self._btn_lang_toggle.pack(side="right")
 
@@ -176,11 +179,21 @@ class PopupApp:
             self._btn_greet.config(text=I18N.t("btn_greet"))
         if self._btn_exit:
             self._btn_exit.config(text=I18N.t("btn_exit"))
-
-    def set_status(self, text: str) -> None:
-        """Update inline status banner."""
         if self._lbl_status:
-            self._lbl_status.config(text=text, fg=THEME.TEXT_SECONDARY)
+            self._lbl_status.config(
+                text=I18N.t(self._status_key, **self._status_kwargs),
+                fg=THEME.TEXT_SECONDARY if self._status_key != "status_ready" else THEME.TEXT_MUTED,
+            )
+
+    def set_status(self, key: str, **kwargs: object) -> None:
+        """Update inline status banner and persist status key for reactive language updates."""
+        self._status_key = key
+        self._status_kwargs = kwargs
+        if self._lbl_status:
+            self._lbl_status.config(
+                text=I18N.t(key, **kwargs),
+                fg=THEME.TEXT_SECONDARY if key != "status_ready" else THEME.TEXT_MUTED,
+            )
 
     def on_close(self) -> None:
         """Gracefully terminate active popups and root window."""
@@ -270,23 +283,24 @@ class PopupApp:
         kapat_butonu.focus_set()
 
     def modern_popup(self) -> None:
-        """Prompt user for name input and present modal greeting with i18n support."""
+        """Prompt user for name input via custom themed modal and present greeting."""
         self.logger.info(I18N.t("log_greet_clicked"))
         try:
-            isim = simpledialog.askstring(
-                I18N.t("dialog_title"),
-                I18N.t("dialog_prompt"),
+            isim = ask_custom_string(
                 parent=self.root,
+                title=I18N.t("dialog_title"),
+                prompt=I18N.t("dialog_prompt"),
+                icon_image=self._icon_image,
             )
             if isim is None:
                 self.logger.info(I18N.t("log_dialog_cancelled"))
-                self.set_status(I18N.t("status_cancelled"))
+                self.set_status("status_cancelled")
                 return
 
             temiz_isim = sanitize_input(isim, max_length=MAX_NAME_LENGTH)
             if temiz_isim:
                 self.logger.info(I18N.t("log_name_entered", name=temiz_isim))
-                self.set_status(I18N.t("status_greeted", name=temiz_isim))
+                self.set_status("status_greeted", name=temiz_isim)
                 self._open_popup(
                     message=I18N.t("greeting_personalized", name=temiz_isim),
                     close_log=I18N.t("log_popup_closed", name=temiz_isim),
@@ -294,13 +308,14 @@ class PopupApp:
                 return
 
             self.logger.warning(I18N.t("log_empty_name"))
-            self.set_status(I18N.t("status_ready"))
+            self.set_status("status_ready")
             self._open_popup(
                 message=I18N.t("greeting_anonymous"),
                 close_log=I18N.t("log_anon_popup_closed"),
             )
         except Exception as exc:
             self.logger.error("Popup olusturulurken hata: %s", exc, exc_info=True)
+            self.set_status("status_error", error=str(exc))
 
     def run(self) -> None:
         """Start the GUI event loop with top-level error trapping."""
