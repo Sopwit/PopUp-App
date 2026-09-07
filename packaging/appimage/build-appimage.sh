@@ -28,6 +28,7 @@ install -m 0644 "${project_root}/src/popupapp/assets/popupapp.png" \
     "${app_dir}/usr/share/icons/hicolor/256x256/apps/io.github.Sopwit.PopUpApp.png"
 install -m 0644 "${project_root}/packaging/appimage/io.github.Sopwit.PopUpApp.appdata.xml" \
     "${app_dir}/usr/share/metainfo/io.github.Sopwit.PopUpApp.appdata.xml"
+install -m 0755 "${project_root}/packaging/appimage/AppRun" "${app_dir}/AppRun"
 ln -s usr/share/applications/io.github.Sopwit.PopUpApp.desktop \
     "${app_dir}/io.github.Sopwit.PopUpApp.desktop"
 ln -s usr/share/icons/hicolor/256x256/apps/io.github.Sopwit.PopUpApp.png \

@@ -1,0 +1,6 @@
+#!/bin/sh
+# AppImage entry point. Keep this wrapper dependency-free: it is executed by
+# the AppImage runtime before the bundled application starts.
+set -eu
+
+exec "${APPDIR}/usr/bin/popupapp" "$@"
