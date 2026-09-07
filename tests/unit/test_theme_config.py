@@ -1,5 +1,7 @@
 """Unit tests for configuration limits and theme aesthetics."""
 
+from importlib import resources
+
 from popupapp.config.constants import (
     APP_DISPLAY_NAME,
     APP_NAME,
@@ -47,3 +49,8 @@ def test_theme_typography() -> None:
         assert len(font_spec) >= 2
         assert isinstance(font_spec[0], str)
         assert isinstance(font_spec[1], int)
+
+
+def test_packaged_application_icon_is_available() -> None:
+    icon = resources.files("popupapp").joinpath("assets", "popupapp.png")
+    assert icon.is_file()
