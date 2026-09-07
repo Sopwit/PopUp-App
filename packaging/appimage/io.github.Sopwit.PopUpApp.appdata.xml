@@ -5,9 +5,8 @@
   <summary>Secure, localized desktop greeting application</summary>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MIT</project_license>
-  <developer>
+  <developer id="io.github.sopwit">
     <name>Emir</name>
-    <id>io.github.Sopwit</id>
   </developer>
   <description>
     <p>PopUp App is a lightweight desktop greeting application with localized Turkish and English interfaces.</p>

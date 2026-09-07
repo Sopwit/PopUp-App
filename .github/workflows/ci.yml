@@ -47,7 +47,7 @@ jobs:
         run: pytest -q
 
   package-linux:
-    name: Package Linux Binary
+    name: Package Linux AppImage
     runs-on: ubuntu-latest
     needs: test
     steps:

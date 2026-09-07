@@ -47,7 +47,7 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          name: PopUp App ${{ github.ref_name }}
           files: |
             dist/PopUp-App-*.AppImage
-          generate_release_notes: true
           body_path: .github/RELEASE_TEMPLATE.md
