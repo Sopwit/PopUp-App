@@ -2,10 +2,6 @@
 
 **A secure, localized desktop greeting application built with Python and Tkinter.**
 
-[![CI](https://github.com/Sopwit/PopUp-App/actions/workflows/ci.yml/badge.svg)](https://github.com/Sopwit/PopUp-App/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/Sopwit/PopUp-App)](https://github.com/Sopwit/PopUp-App/releases)
-[![License](https://img.shields.io/github/license/Sopwit/PopUp-App)](LICENSE)
-
 ---
 
 ## Overview
