@@ -207,7 +207,7 @@ class PopupApp:
         except tk.TclError:
             self.logger.debug("Ana pencere kapanirken zaten yoktu.")
 
-    def _on_root_destroy(self, event: tk.Event[tk.Misc]) -> None:
+    def _on_root_destroy(self, event: tk.Event) -> None:
         """Avoid retaining a dead application through the global i18n manager."""
         if event.widget == self.root:
             I18N.remove_listener(self._apply_language)
