@@ -1,0 +1,87 @@
+name: Rebuild ARM64 Release Asset
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing release tag to package
+        required: true
+        default: v0.0.1
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  package-arm64:
+    name: Build ARM64 AppImage
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout packaging tools
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y desktop-file-utils python3-tk
+
+      - name: Build tagged ARM64 application
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          source_dir="$RUNNER_TEMP/source"
+          git worktree add --detach "$source_dir" "$RELEASE_TAG"
+          python -m pip install --upgrade pip
+          python -m pip install -r "$source_dir/dev-install.txt"
+          python -m PyInstaller --clean --noconfirm "$source_dir/popupapp.spec" \
+            --distpath "$source_dir/dist" --workpath "$source_dir/build"
+
+      - name: Build ARM64 AppImage
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          source_dir="$RUNNER_TEMP/source"
+          version="${RELEASE_TAG#v}"
+          app_dir="$RUNNER_TEMP/AppDir"
+          output="$RUNNER_TEMP/PopUp-App-${version}-aarch64.AppImage"
+          tool="$RUNNER_TEMP/appimagetool-aarch64.AppImage"
+          mkdir -p "$app_dir/usr/bin" "$app_dir/usr/share/applications" \
+            "$app_dir/usr/share/icons/hicolor/256x256/apps" "$app_dir/usr/share/metainfo"
+          install -m 0755 "$source_dir/dist/popupapp" "$app_dir/usr/bin/popupapp"
+          install -m 0644 packaging/appimage/io.github.Sopwit.PopUpApp.desktop \
+            "$app_dir/usr/share/applications/io.github.Sopwit.PopUpApp.desktop"
+          install -m 0644 "$source_dir/logo.png" \
+            "$app_dir/usr/share/icons/hicolor/256x256/apps/io.github.Sopwit.PopUpApp.png"
+          install -m 0644 packaging/appimage/io.github.Sopwit.PopUpApp.appdata.xml \
+            "$app_dir/usr/share/metainfo/io.github.Sopwit.PopUpApp.appdata.xml"
+          ln -s usr/share/applications/io.github.Sopwit.PopUpApp.desktop \
+            "$app_dir/io.github.Sopwit.PopUpApp.desktop"
+          ln -s usr/share/icons/hicolor/256x256/apps/io.github.Sopwit.PopUpApp.png \
+            "$app_dir/io.github.Sopwit.PopUpApp.png"
+          curl -L --fail --retry 3 \
+            https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-aarch64.AppImage \
+            -o "$tool"
+          chmod +x "$tool"
+          ARCH=aarch64 "$tool" --appimage-extract-and-run "$app_dir" "$output"
+          printf 'APPIMAGE=%s\n' "$output" >> "$GITHUB_ENV"
+
+      - name: Upload asset and refresh release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          version="${RELEASE_TAG#v}"
+          arm_name="PopUp-App-${version}-aarch64.AppImage"
+          x86_name="PopUp-App-${version}-x86_64.AppImage"
+          arm_digest="sha256:$(sha256sum "$APPIMAGE" | awk '{print $1}')"
+          x86_digest="$(gh release view "$RELEASE_TAG" --json assets --jq ".assets[] | select(.name == \"${x86_name}\") | .digest")"
+          gh release upload "$RELEASE_TAG" "$APPIMAGE" --clobber
+          notes=$(printf '# PopUp App v%s\n\n## Download\n\nDownload the AppImage matching your Linux architecture from the assets below. No installation is required.\n\n```bash\nchmod +x PopUp-App-%s-<architecture>.AppImage\n./PopUp-App-%s-<architecture>.AppImage\n```\n\n## Assets\n\n- `%s` — Linux x86_64\n- `%s` — Linux ARM64 (aarch64)\n\n## Highlights\n\n- Turkish and English interface with runtime language switching.\n- Sanitized user input and rotating local logs.\n- Modern Tkinter desktop interface with modal greeting workflow.\n\n## Integrity\n\n- `%s`: `%s`\n- `%s`: `%s`\n\nBuilt from the signed `%s` source tag.' "$version" "$version" "$version" "$x86_name" "$arm_name" "$x86_name" "$x86_digest" "$arm_name" "$arm_digest" "$RELEASE_TAG")
+          gh release edit "$RELEASE_TAG" --title "PopUp App ${RELEASE_TAG}" --notes "$notes"
