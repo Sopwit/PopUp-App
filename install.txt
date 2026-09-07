@@ -1,3 +1,0 @@
-# Runtime dependencies
-# This project uses Python stdlib modules (including tkinter).
-# No external runtime package is required.

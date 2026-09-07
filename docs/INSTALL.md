@@ -18,7 +18,7 @@
    ```bash
    make run
    # Or directly:
-   python3 popupapp.py
+   python3 -m popupapp
    ```
 
 ## Option 2: Precompiled Binaries

@@ -7,7 +7,7 @@
 ```mermaid
 graph TD
     subgraph UI Layer ["UI Layer (src/popupapp/ui)"]
-        Entry[popupapp.py / __main__.py] --> App[PopupApp Controller]
+        Entry[python -m popupapp] --> App[PopupApp Controller]
         App --> Components[UI Components & Buttons]
         App --> Modal[Modal Greeting Dialog]
     end
@@ -25,10 +25,15 @@ graph TD
         Constants[Constants & Limits]
     end
 
+    subgraph Assets ["Package Assets"]
+        Icon[assets/popupapp.png]
+    end
+
     App --> Sanitizer
     App --> LoggingService
     App --> Theme
     App --> Constants
+    App --> Icon
     LoggingService --> Constants
 ```
 

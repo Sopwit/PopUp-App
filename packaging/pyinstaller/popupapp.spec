@@ -1,33 +1,26 @@
-# -*- mode: python ; coding: utf-8 -*-
-import os
-import sys
+from pathlib import Path
 
-spec_dir = os.path.abspath(SPECPATH)
-src_dir = os.path.join(spec_dir, "src")
-if src_dir not in sys.path:
-    sys.path.insert(0, src_dir)
-
-block_cipher = None
+project_dir = Path(SPECPATH).resolve().parents[1]
+src_dir = project_dir / "src"
 
 a = Analysis(
-    [os.path.join(src_dir, 'popupapp', '__main__.py')],
-    pathex=[src_dir],
+    [str(src_dir / "popupapp" / "__main__.py")],
+    pathex=[str(src_dir)],
     binaries=[],
     datas=[
-        (os.path.join(spec_dir, 'logo.png'), '.'),
+        (str(src_dir / "popupapp" / "assets"), "popupapp/assets"),
     ],
-    hiddenimports=['tkinter'],
+    hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=['unittest', 'pdb', 'difflib', 'doctest', 'email', 'html', 'http', 'xml'],
+    excludes=[],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
-    cipher=block_cipher,
     noarchive=False,
 )
 
-pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+pyz = PYZ(a.pure, a.zipped_data)
 
 exe = EXE(
     pyz,

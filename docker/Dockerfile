@@ -10,13 +10,12 @@ RUN apt-get update && apt-get install -y \
     binutils \
     && rm -rf /var/lib/apt/lists/*
 
-COPY dev-install.txt ./
-RUN python -m pip install --no-cache-dir --upgrade pip && \
-    python -m pip install --no-cache-dir -r dev-install.txt
-
 COPY . .
 
+RUN python -m pip install --no-cache-dir --upgrade pip && \
+    python -m pip install --no-cache-dir ".[dev]"
+
 # Linux icin tek dosya binary uretilir.
-CMD pyinstaller popupapp.spec && \
+CMD pyinstaller packaging/pyinstaller/popupapp.spec && \
     mkdir -p /output && \
     cp dist/popupapp /output/popupapp-linux

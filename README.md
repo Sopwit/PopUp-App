@@ -4,7 +4,7 @@
 
 **A lightweight, production-grade cross-platform desktop popup & greeting application built with modern Python and Tkinter.**
 
-[English](README.md) • [Türkçe](README_TR.md) • [Architecture](docs/ARCHITECTURE.md) • [Build Guide](docs/BUILD.md) • [Security](docs/SECURITY.md)
+[English](README.md) • [Türkçe](docs/overview/README.tr.md) • [Architecture](docs/ARCHITECTURE.md) • [Build Guide](docs/BUILD.md) • [Security](docs/SECURITY.md)
 
 </div>
 
@@ -26,7 +26,7 @@
 ```mermaid
 graph TD
     subgraph UI Layer ["UI Layer (src/popupapp/ui)"]
-        Entry[popupapp.py / __main__.py] --> App[PopupApp Controller]
+        Entry[python -m popupapp] --> App[PopupApp Controller]
         App --> Components[UI Components & Buttons]
         App --> Modal[Modal Greeting Dialog]
     end
@@ -60,33 +60,21 @@ PopUp-App/
 ├── .editorconfig
 ├── .gitattributes
 ├── .gitignore
-├── CODE_OF_CONDUCT.md
-├── CONTRIBUTING.md
 ├── LICENSE
 ├── Makefile                       # Development & build task automation
 ├── README.md                      # English documentation
-├── README_TR.md                   # Turkish documentation
-├── SECURITY.md                    # Security policy & controls
-├── CHANGELOG.md                   # Release notes & semantic versioning
 ├── pyproject.toml                 # Packaging & pytest configuration
-├── dev-install.txt                # Development dependencies
-├── install.txt                    # Runtime dependencies (pure stdlib)
-├── Dockerfile                     # Reproducible build container
-├── logo.png                       # Application icon asset
-├── popupapp.py                    # Root execution entry point
-├── popupapp.spec                  # PyInstaller build specification
+├── docker/Dockerfile               # Reproducible build container
+├── packaging/pyinstaller/          # PyInstaller build definition
 ├── docs/                          # In-depth technical documentation
 │   ├── ARCHITECTURE.md
 │   ├── BUILD.md
+│   ├── CHANGELOG.md
 │   ├── INSTALL.md
 │   └── SECURITY.md
-├── scripts/                       # Developer automation scripts
-│   ├── dev.sh
-│   ├── test.sh
-│   ├── lint.sh
-│   ├── build.sh
-│   └── clean.sh
+├── .github/                        # CI and community policy files
 ├── src/popupapp/                  # Core package
+│   ├── assets/popupapp.png         # Packaged application icon
 │   ├── config/                    # Theme and constants
 │   ├── core/                      # Domain logic & sanitization
 │   ├── services/                  # OS-aware logging & rotation
