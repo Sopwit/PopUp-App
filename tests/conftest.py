@@ -11,7 +11,10 @@ import pytest
 @pytest.fixture
 def tk_root() -> Generator[tk.Tk, None, None]:
     """Provide an isolated, withdrawn Tkinter root instance."""
-    root = tk.Tk()
+    try:
+        root = tk.Tk()
+    except tk.TclError as exc:
+        pytest.skip(f"Tkinter display is unavailable: {exc}")
     root.withdraw()
     yield root
     try:

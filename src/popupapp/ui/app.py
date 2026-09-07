@@ -1,7 +1,7 @@
 """Main desktop GUI Application controller with custom themed dialogs, reactive i18n, and modal popups."""
 
 import logging
-from pathlib import Path
+from importlib import resources
 import tkinter as tk
 
 from popupapp.config.constants import (
@@ -26,6 +26,7 @@ class PopupApp:
         self.root = root if root is not None else tk.Tk()
         self.root.configure(bg=THEME.BG_CANVAS)
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.root.bind("<Destroy>", self._on_root_destroy, add="+")
 
         self._active_popup: tk.Toplevel | None = None
         self._icon_image: tk.PhotoImage | None = None
@@ -51,19 +52,14 @@ class PopupApp:
         self._bind_shortcuts()
 
     def _set_app_icon(self) -> None:
-        """Discover and bind application icon if present."""
+        """Load the packaged application icon without relying on the working directory."""
         try:
-            possible_paths = [
-                Path(__file__).resolve().parent.parent.parent.parent / "logo.png",
-                Path(__file__).resolve().parent.parent / "logo.png",
-                Path.cwd() / "logo.png",
-            ]
-            for icon_path in possible_paths:
-                if icon_path.exists():
+            icon_resource = resources.files("popupapp").joinpath("assets", "popupapp.png")
+            with resources.as_file(icon_resource) as icon_path:
+                if icon_path.is_file():
                     self._icon_image = tk.PhotoImage(file=str(icon_path))
                     self.root.iconphoto(False, self._icon_image)
-                    break
-        except Exception as exc:
+        except (FileNotFoundError, ModuleNotFoundError, tk.TclError) as exc:
             self.logger.debug("Ikon yuklenemedi: %s", exc)
 
     def _bind_shortcuts(self) -> None:
@@ -197,22 +193,33 @@ class PopupApp:
 
     def on_close(self) -> None:
         """Gracefully terminate active popups and root window."""
+        I18N.remove_listener(self._apply_language)
         self.logger.info(I18N.t("log_app_closed"))
         if self._active_popup and self._active_popup.winfo_exists():
             try:
+                self._active_popup.grab_release()
                 self._active_popup.destroy()
-            except Exception:
-                pass
+            except tk.TclError:
+                self.logger.debug("Popup kapanirken zaten yoktu.")
             self._active_popup = None
-        self.root.destroy()
+        try:
+            self.root.destroy()
+        except tk.TclError:
+            self.logger.debug("Ana pencere kapanirken zaten yoktu.")
+
+    def _on_root_destroy(self, event: tk.Event[tk.Misc]) -> None:
+        """Avoid retaining a dead application through the global i18n manager."""
+        if event.widget == self.root:
+            I18N.remove_listener(self._apply_language)
 
     def _open_popup(self, message: str, close_log: str) -> None:
         """Spawn a modal greeting dialog centered on top of parent window."""
         if self._active_popup and self._active_popup.winfo_exists():
             try:
+                self._active_popup.grab_release()
                 self._active_popup.destroy()
-            except Exception:
-                pass
+            except tk.TclError:
+                self.logger.debug("Onceki popup zaten kapatilmis.")
             self._active_popup = None
 
         popup = tk.Toplevel(self.root)
@@ -254,9 +261,10 @@ class PopupApp:
             if self._active_popup == popup:
                 self._active_popup = None
             try:
+                popup.grab_release()
                 popup.destroy()
-            except Exception:
-                pass
+            except tk.TclError:
+                self.logger.debug("Popup kapanirken zaten yoktu.")
 
         kapat_butonu = create_styled_button(
             parent=card,
@@ -268,16 +276,12 @@ class PopupApp:
             width=12,
         )
         kapat_butonu.pack(pady=4)
-        kapat_butonu.bind("<Button-1>", lambda _e: popup_kapat())
-        kapat_butonu.bind("<Return>", lambda _e: popup_kapat())
-        kapat_butonu.bind("<space>", lambda _e: popup_kapat())
 
         popup.protocol("WM_DELETE_WINDOW", popup_kapat)
-        popup.bind("<Return>", lambda _e: popup_kapat())
         popup.bind("<Escape>", lambda _e: popup_kapat())
-        popup.bind("<space>", lambda _e: popup_kapat())
 
         center_window(popup, POPUP_WINDOW_WIDTH, POPUP_WINDOW_HEIGHT, parent=self.root)
+        popup.grab_set()
         popup.lift()
         popup.focus_force()
         kapat_butonu.focus_set()

@@ -14,12 +14,14 @@ def test_app_lifecycle_open_close(tk_root) -> None:
     app._open_popup(message="Hello Unit Test", close_log="Unit test popup closed")
     assert app._active_popup is not None
     assert app._active_popup.winfo_exists()
+    assert tk_root.grab_current() == app._active_popup
 
     # Reopening should close the prior popup safely
     old_popup = app._active_popup
     app._open_popup(message="Second Popup", close_log="Second popup closed")
     assert app._active_popup is not old_popup
     assert not old_popup.winfo_exists()
+    assert tk_root.grab_current() == app._active_popup
 
     app.on_close()
     assert logger.info.called

@@ -141,13 +141,20 @@ def ask_custom_string(
     )
     entry.pack(fill="x", pady=(0, 16), ipady=4)
 
+    def close_dialog() -> None:
+        try:
+            dialog.grab_release()
+            dialog.destroy()
+        except tk.TclError:
+            pass
+
     def on_submit() -> None:
         result[0] = entry_var.get()
-        dialog.destroy()
+        close_dialog()
 
     def on_cancel() -> None:
         result[0] = None
-        dialog.destroy()
+        close_dialog()
 
     btn_row = tk.Frame(card, bg=THEME.BG_CARD)
     btn_row.pack(fill="x")
@@ -175,10 +182,11 @@ def ask_custom_string(
     btn_cancel.pack(side="right")
 
     dialog.protocol("WM_DELETE_WINDOW", on_cancel)
-    dialog.bind("<Return>", lambda _e: on_submit())
+    entry.bind("<Return>", lambda _e: on_submit())
     dialog.bind("<Escape>", lambda _e: on_cancel())
 
     center_window(dialog, 380, 200, parent=parent)
+    dialog.grab_set()
     entry.focus_set()
     dialog.wait_window()
 
