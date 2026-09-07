@@ -79,7 +79,7 @@ jobs:
           ./PopUp-App.AppImage --appimage-extract
           test -x squashfs-root/AppRun
           timeout_status=0
-          timeout 5 xvfb-run -a squashfs-root/AppRun || timeout_status=$?
+          APPDIR="$PWD/squashfs-root" timeout 5 xvfb-run -a squashfs-root/AppRun || timeout_status=$?
           test "$timeout_status" -eq 124
           printf 'APPIMAGE=%s\n' "$output" >> "$GITHUB_ENV"
 
