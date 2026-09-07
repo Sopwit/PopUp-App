@@ -1,23 +1,23 @@
-## PopUp App for Linux
+# PopUp App v<version>
 
-A portable, secure, localized desktop greeting application.
+## Downloads
 
-## Download
-
-Download the `.AppImage` file attached to this release. No installation is required.
+Download the AppImage matching your Linux architecture from the release assets.
 
 ```bash
-chmod +x PopUp-App-*.AppImage
-./PopUp-App-*.AppImage
+chmod +x PopUp-App-<version>-<architecture>.AppImage
+./PopUp-App-<version>-<architecture>.AppImage
 ```
 
-## Included
+## Assets
 
-- Portable Linux x86_64 AppImage package.
-- Turkish and English runtime language switching.
-- Sanitized user input and rotating local logs.
-- Modal desktop interaction with packaged application assets.
+- `PopUp-App-<version>-x86_64.AppImage` — Linux x86_64
+- `PopUp-App-<version>-aarch64.AppImage` — Linux ARM64
 
 ## Verification
 
-The artifact is built by GitHub Actions from the release tag after the test matrix passes on Linux, macOS, and Windows.
+List the SHA-256 digest for every uploaded AppImage and state the source tag used for the build.
+
+## Changes
+
+- No additional notes.

@@ -1,137 +1,84 @@
-<div align="center">
+# PopUp App
 
-# 🏰 PopUp App
+**A secure, localized desktop greeting application built with Python and Tkinter.**
 
-**A lightweight, production-grade cross-platform desktop popup & greeting application built with modern Python and Tkinter.**
-
-[English](README.md) • [Türkçe](docs/overview/README.tr.md) • [Architecture](docs/ARCHITECTURE.md) • [Build Guide](docs/BUILD.md) • [Security](docs/SECURITY.md)
-
-</div>
+[![CI](https://github.com/Sopwit/PopUp-App/actions/workflows/ci.yml/badge.svg)](https://github.com/Sopwit/PopUp-App/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/Sopwit/PopUp-App)](https://github.com/Sopwit/PopUp-App/releases)
+[![License](https://img.shields.io/github/license/Sopwit/PopUp-App)](LICENSE)
 
 ---
 
-## 🌟 Key Highlights
+## Overview
 
-- ⚡ **Ultra-Fast Startup**: Zero heavy dependencies, pure standard library execution with Tkinter.
-- 🛡️ **Hardened Security**: Built-in protection against CRLF Log Injection (CWE-117) and automatic log rotation (DoS defense).
-- 🎨 **Modern Dark Aesthetics**: Premium dark theme with vibrant gold accents and jitter-free hover interactions.
-- 🪟 **True Modal Management**: Centered windows on screen/parent with strict modal focus and single-instance popup controls.
-- 📁 **Cross-Platform OS Logging**: Automatic OS-standard log directory routing (Linux XDG, macOS Application Support, Windows AppData).
-- 🚀 **CI/CD & Single-File Binaries**: Multi-OS GitHub Actions workflow and PyInstaller packaging.
+PopUp App provides a small, focused desktop flow: collect an optional name, display a localized greeting, and keep application diagnostics in an OS-appropriate rotating log. It is intentionally dependency-light at runtime and ships as portable Linux AppImages for both x86_64 and ARM64.
 
----
+### Core capabilities
 
-## 🏛️ Architecture Overview
-
-```mermaid
-graph TD
-    subgraph UI Layer ["UI Layer (src/popupapp/ui)"]
-        Entry[python -m popupapp] --> App[PopupApp Controller]
-        App --> Components[UI Components & Buttons]
-        App --> Modal[Modal Greeting Dialog]
-    end
-
-    subgraph Core Domain ["Core Logic (src/popupapp/core)"]
-        Sanitizer[Input Sanitizer / CWE-117 Defense]
-    end
-
-    subgraph Infrastructure ["Services (src/popupapp/services)"]
-        LoggingService[Rotating Logging Service]
-    end
-
-    subgraph Configuration ["Config (src/popupapp/config)"]
-        Theme[UITheme & Palette]
-        Constants[Constants & Limits]
-    end
-
-    App --> Sanitizer
-    App --> LoggingService
-    App --> Theme
-    App --> Constants
-    LoggingService --> Constants
-```
+- **Localized desktop interface:** Turkish and English text can be switched while the application is running.
+- **Safe greeting flow:** User input is normalized, limited, and stripped of control characters before it reaches logs or UI state.
+- **Modal interaction:** The name prompt and greeting window retain focus correctly and clean up their modal ownership on close.
+- **Portable Linux delivery:** GitHub Releases provide `.AppImage` artifacts for x86_64 and aarch64 systems.
+- **Cross-platform verification:** The test matrix runs on Linux, macOS, and Windows; the Linux packaging job builds the AppImage artifact.
 
 ---
 
-## 📂 Project Structure
+## Quick start
 
-```text
-PopUp-App/
-├── .editorconfig
-├── .gitattributes
-├── .gitignore
-├── LICENSE
-├── Makefile                       # Development & build task automation
-├── README.md                      # English documentation
-├── pyproject.toml                 # Packaging & pytest configuration
-├── docker/Dockerfile               # Reproducible build container
-├── packaging/pyinstaller/          # PyInstaller build definition
-├── docs/                          # In-depth technical documentation
-│   ├── ARCHITECTURE.md
-│   ├── BUILD.md
-│   ├── CHANGELOG.md
-│   ├── INSTALL.md
-│   └── SECURITY.md
-├── .github/                        # CI and community policy files
-├── src/popupapp/                  # Core package
-│   ├── assets/popupapp.png         # Packaged application icon
-│   ├── config/                    # Theme and constants
-│   ├── core/                      # Domain logic & sanitization
-│   ├── services/                  # OS-aware logging & rotation
-│   └── ui/                        # Presentation & modal components
-└── tests/                         # Comprehensive test suite
-    ├── conftest.py
-    ├── unit/                      # Unit tests
-    └── integration/               # Integration tests
-```
-
----
-
-## 🚀 Quickstart
-
-### 1. Run from Source
+### Run from source
 
 ```bash
-# Clone the repository
 git clone https://github.com/Sopwit/PopUp-App.git
 cd PopUp-App
-
-# Run directly
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install ".[dev]"
 make run
 ```
 
-### 2. Run Tests & Validation
+### Run the Linux AppImage
+
+Download the artifact for your architecture from [GitHub Releases](https://github.com/Sopwit/PopUp-App/releases), then run:
 
 ```bash
-# Install development dependencies
-make dev-install
-
-# Run full test suite
-make test
-
-# Check syntax and test execution
-make check
+chmod +x PopUp-App-<version>-<architecture>.AppImage
+./PopUp-App-<version>-<architecture>.AppImage
 ```
 
-### 3. Build Standalone Binary
-
-```bash
-make build
-# Binary created at: dist/popupapp
-```
+Supported release architectures are `x86_64` and `aarch64`.
 
 ---
 
-## 📜 Log Storage Locations
+## Development commands
 
-| Operating System | Default Path |
-| :--- | :--- |
-| **Linux / BSD** | `~/.local/share/super_popup_app/app_log.txt` |
-| **macOS** | `~/Library/Application Support/super_popup_app/app_log.txt` |
-| **Windows** | `%APPDATA%\super_popup_app\app_log.txt` |
+| Command | Purpose |
+| --- | --- |
+| `make run` | Run the application from the source tree. |
+| `make test` | Run the complete pytest suite. |
+| `make lint` | Compile the package and test sources. |
+| `make check` | Run lint/compilation and tests together. |
+| `make build` | Create a PyInstaller executable in `dist/`. |
+| `APP_VERSION=<version> make appimage` | Build a Linux AppImage. |
+| `make clean` | Remove local build and cache artifacts. |
 
 ---
 
-## 📄 License
+## Documentation
 
-Distributed under the MIT License. See [`LICENSE`](LICENSE) for details.
+- [Installation guide](docs/INSTALL.md) — source, AppImage, and environment requirements.
+- [Build guide](docs/BUILD.md) — test, PyInstaller, AppImage, and container build workflows.
+- [Architecture](docs/ARCHITECTURE.md) — package boundaries, UI flow, and lifecycle design.
+- [Configuration reference](docs/CONFIGURATION.md) — constants, theme surface, localization, and log storage.
+- [Security notes](docs/SECURITY.md) — input, logging, and reporting model.
+- [Release guide](docs/RELEASE.md) — tag, artifact, integrity, and GitHub release process.
+- [Change log](docs/CHANGELOG.md) — released and unreleased changes.
+- [Türkçe özet](docs/overview/README.tr.md) — Turkish project overview.
+
+## Project governance
+
+- [Contributing guide](.github/CONTRIBUTING.md)
+- [Code of conduct](.github/CODE_OF_CONDUCT.md)
+- [Security policy](.github/SECURITY.md)
+
+## License
+
+PopUp App is released under the [MIT License](LICENSE).

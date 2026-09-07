@@ -1,14 +1,29 @@
-# Security Architecture & Controls
+# Security architecture
 
-## Threat Modeling & Mitigations
+## Scope
 
-### 1. Log Injection / CRLF Manipulation (CWE-117)
-- **Vulnerability**: Unsanitized user string input containing carriage returns (`\r`) or line feeds (`\n`) can craft deceptive log lines or corrupt log parsers.
-- **Mitigation**: `popupapp.core.sanitization.sanitize_input()` removes all ASCII control characters (`0x00`-`0x1F` and `0x7F`-`0x9F`) and enforces a 50-character limit before logging.
+PopUp App is a local desktop utility. It does not accept network requests, manage credentials, or execute user-provided code. Its security boundary is the local GUI input and local diagnostic log.
 
-### 2. Disk Exhaustion (Denial of Service)
-- **Vulnerability**: Unbounded logging in standard `FileHandler` can consume arbitrary disk space.
-- **Mitigation**: Configured `RotatingFileHandler` with strict 1MB byte limit (`maxBytes=1_048_576`) and max 3 rollover backups (`backupCount=3`).
+## Input and log integrity
 
-### 3. File System Permissions
-- **Mitigation**: Storage directories are initialized with POSIX `0o700` permissions (`rwx------`), restricting read/write access to the current system user.
+Name input passes through `sanitize_input()` before it is logged or used in a greeting. The sanitizer:
+
+- Removes carriage returns, line feeds, tabs, null bytes, and other ASCII control characters.
+- Collapses repeated whitespace into one space.
+- Enforces the configured maximum length.
+
+This prevents control-character and CRLF log injection (CWE-117) through the greeting field.
+
+## Log availability and permissions
+
+- Logs use `RotatingFileHandler` with a 1 MiB active-file limit and three backups.
+- New POSIX log directories are created with `0o700` permissions.
+- Platform-aware paths avoid writing application logs to the project checkout.
+
+## Packaging trust boundary
+
+Release AppImages are produced from version tags by GitHub Actions. Verify the SHA-256 digest published in the corresponding GitHub Release before running a downloaded artifact.
+
+## Reporting vulnerabilities
+
+Do not disclose suspected vulnerabilities through public issues. Report a concise reproduction, impact assessment, affected version, and any mitigations directly to the repository maintainers through GitHub’s private security reporting channel when available.

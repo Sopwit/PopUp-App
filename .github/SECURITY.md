@@ -1,20 +1,14 @@
 # Security Policy
 
-## Supported Versions
+## Supported version
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 0.0.1   | :white_check_mark: |
-| < 0.0.1 | :x:                |
+| Version | Supported |
+| --- | --- |
+| 0.0.1 | Yes |
+| Older versions | No |
 
-## Reporting a Vulnerability
+## Reporting a vulnerability
 
-If you discover a potential security vulnerability within this project:
-1. Please do not disclose it publicly on issues or forums.
-2. Contact the maintainers directly with details and reproduction steps.
-3. We will review and address the vulnerability promptly.
+Do not open a public issue for a potential security vulnerability. Use GitHub private vulnerability reporting when it is enabled for the repository, or contact the maintainers privately with the affected version, reproduction steps, impact, and suggested mitigation.
 
-## Security Controls in PopUp-App
-- **Input Sanitization**: User input is strictly sanitized with regex control-character elimination and max length enforcement to prevent Log Injection (CRLF / CWE-117).
-- **Log Rotation**: Rotation limits prevent disk filling and Denial of Service.
-- **Strict File Permissions**: Log directories are created with `0o700` POSIX permissions.
+See the [security architecture](../docs/SECURITY.md) for the current input, logging, and distribution controls.
